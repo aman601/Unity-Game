@@ -8,6 +8,7 @@ public class MainMenu : MonoBehaviour
     public void playGame()
     {
         //Load Game, set menu to 0
-        SceneManager.LoadScene(1);
+        //SceneManager.LoadScene(1);
+        Debug.Log("Button works!");
     }
 }
