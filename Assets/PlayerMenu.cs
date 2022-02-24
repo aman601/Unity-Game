@@ -7,6 +7,7 @@ public class PlayerMenu : MonoBehaviour
 {
     public GameObject playersObject;
     public GameObject menuObject;
+    public GameObject multiObject;
     public void singlePlayer()
     {
         SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex + 1);
@@ -14,7 +15,8 @@ public class PlayerMenu : MonoBehaviour
 
     public void multiPlayer()
     {
-        Application.Quit();
+        playersObject.SetActive(false);
+        multiObject.SetActive(true);
     }
 
     public void back()
