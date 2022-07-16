@@ -35,11 +35,11 @@ namespace servers
         void Start()
         {
             //CloseAllSockets();
-                //Debug.Log("Client disconnected");
+            //Debug.Log("Client disconnected");
             mainRB = mainCar.GetComponent<Rigidbody>();
             rg.GetComponent<RandomGen>().setSeed();
             genData = rg.GetComponent<RandomGen>().getSeed().ToString();
-            
+
 
             /*
             oldPosi[0] = "0";
@@ -87,7 +87,8 @@ namespace servers
             }
         }*/
 
-        void Update() {
+        void Update()
+        {
             //Debug.Log("Update running");
             //foreach (string s in posi) {
             //    Debug.Log(s);
@@ -95,23 +96,26 @@ namespace servers
             mainPosition = mainCar.transform.position.ToString("F3");
             mainRotation = mainCar.transform.rotation.ToString("F3");
             mainVel = mainRB.velocity.ToString("F3");
-            
+
             totalCarData = mainPosition + "," + mainRotation + "," + mainVel;
 
             //Debug.Log("Running getSeed: " + rg.GetComponent<RandomGen>().getSeed());
             //was used to ensure packet sent, but tcp so should be fine
-            if (sentSeed == true) {
+            if (sentSeed == true)
+            {
                 //rg.GetComponent<RandomGen>().setSeedFalse();
                 //sentSeed = false;
                 genData = "";
             }
-            
-            
+
+
             totalData = "{" + "|" + totalCarData + "|" + genData + "}";
             //Debug.Log("Total data: " + totalData);
 
-            try {
-                if ((posi[0] != oldPosi[0]) || (posi[1] != oldPosi[1]) || (posi[2] != oldPosi[2])) {
+            try
+            {
+                if ((posi[0] != oldPosi[0]) || (posi[1] != oldPosi[1]) || (posi[2] != oldPosi[2]))
+                {
                     otherRB.constraints = RigidbodyConstraints.None;
                     carcar.transform.position = new Vector3(float.Parse(posi[0]), float.Parse(posi[1]), float.Parse(posi[2]));
                     oldPosi[0] = posi[0];
@@ -119,18 +123,24 @@ namespace servers
                     oldPosi[2] = posi[2];
                     //Debug.Log("Old pos: " + oldPosi[0] + "," + oldPosi[1] + ","+ oldPosi[2]);
                     //Debug.Log("New pos: " + posi[0] + "," + posi[1] + ","+ posi[2]);
-                } else {
+                }
+                else
+                {
                     //Debug.Log("No pos difference");
                     otherRB.constraints = RigidbodyConstraints.FreezePositionY;
                 }
-            } catch (Exception e) {
+            }
+            catch (Exception e)
+            {
 
             }
-            
+
         }
 
-        void FixedUpdate() {
-            try {
+        void FixedUpdate()
+        {
+            try
+            {
 
                 /*if (Physics.Raycast(otherRB.transform.position, otherRB.transform.TransformDirection(Vector3.down), (float).2)
                 && !(ramping)) {
@@ -143,25 +153,33 @@ namespace servers
                 }*/
 
 
-                if ((posi[3] != oldPosi[3]) || (posi[4] != oldPosi[4]) || (posi[5] != oldPosi[5]) || (posi[6] != oldPosi[6])) {
+                if ((posi[3] != oldPosi[3]) || (posi[4] != oldPosi[4]) || (posi[5] != oldPosi[5]) || (posi[6] != oldPosi[6]))
+                {
                     carcar.transform.rotation = new Quaternion(float.Parse(posi[3]), float.Parse(posi[4]), float.Parse(posi[5]), float.Parse(posi[6]));
                     oldPosi[3] = posi[3];
                     oldPosi[4] = posi[4];
                     oldPosi[5] = posi[5];
                     oldPosi[6] = posi[6];
-                } else {
+                }
+                else
+                {
                     //Debug.Log("No rot difference");
                 }
-                if ((posi[7] != oldPosi[7]) || (posi[8] != oldPosi[8]) || (posi[9] != oldPosi[9])) {
+                if ((posi[7] != oldPosi[7]) || (posi[8] != oldPosi[8]) || (posi[9] != oldPosi[9]))
+                {
                     otherRB.velocity = new Vector3(float.Parse(posi[7]), float.Parse(posi[8]), float.Parse(posi[9]));
                     oldPosi[7] = posi[7];
                     oldPosi[8] = posi[8];
                     oldPosi[9] = posi[9];
-                } else {
+                }
+                else
+                {
                     //Debug.Log("No vel difference");
                 }
 
-            } catch (Exception e) {
+            }
+            catch (Exception e)
+            {
 
             }
         }
@@ -171,7 +189,7 @@ namespace servers
             Debug.Log("Setting up server...");
             serverSocket.Bind(new IPEndPoint(IPAddress.Any, PORT));
             serverSocket.Listen(0);
-            
+
             //begin accept here and at bottom of acceptcallback are replaced by an infinite loop
             serverSocket.BeginAccept(AcceptCallback, null);
             Debug.Log("Server setup complete");
@@ -206,7 +224,7 @@ namespace servers
                 return;
             }
 
-           clientSockets.Add(socket);
+            clientSockets.Add(socket);
             //make other car here
             //Debug.Log("Making Other Car");
             //GameObject.FindGameObjectWithTag("nonstatic").GetComponent<nonStaticNetcode>().log();
@@ -216,15 +234,16 @@ namespace servers
             //make send loop that wont progress until it receives data?
             //look into that, cant set stuff in receivecallback like I AM NOT
             //ABOVE IS IMPORTANT
-            
-           socket.BeginReceive(buffer, 0, BUFFER_SIZE, SocketFlags.None, ReceiveCallback, socket);
-           Debug.Log("Client connected, waiting for request...");
-           serverSocket.BeginAccept(AcceptCallback, null);
+
+            socket.BeginReceive(buffer, 0, BUFFER_SIZE, SocketFlags.None, ReceiveCallback, socket);
+            Debug.Log("Client connected, waiting for request...");
+            serverSocket.BeginAccept(AcceptCallback, null);
         }
-        public void log() {
+        public void log()
+        {
             Debug.Log("log");
         }
-        
+
 
         private static void ReceiveCallback(IAsyncResult AR)
         {
@@ -239,7 +258,7 @@ namespace servers
             {
                 Debug.Log("Client forcefully disconnected");
                 // Don't shutdown because the socket may be disposed and its disconnected anyway.
-                current.Close(); 
+                current.Close();
                 clientSockets.Remove(current);
                 return;
             }
@@ -254,7 +273,7 @@ namespace servers
             //posi = text.Substring (1, text.Length-2).Split (',');
             //removed parenthesis so start at start and end at end
             //Debug.Log("received");
-            posi = text.Substring (0, text.Length).Split (',');
+            posi = text.Substring(0, text.Length).Split(',');
 
             /*if (text.ToLower() == "w") // Client requested time
             {
@@ -272,20 +291,20 @@ namespace servers
                 Debug.Log("Client disconnected");
                 return;
             }*/
-            
+
             //Debug.Log(text.ToString());
             byte[] data = Encoding.ASCII.GetBytes(totalData);
             current.Send(data);
             sentSeed = true;
             //Debug.Log("Warning Sent");
-            
+
 
             current.BeginReceive(buffer, 0, BUFFER_SIZE, SocketFlags.None, ReceiveCallback, current);
         }
 
-        
-            //Vector3fromString
-//A useful function to convert back from a given Vector3.toString() output.  Passes back a Unity Vector3 object.
+
+        //Vector3fromString
+        //A useful function to convert back from a given Vector3.toString() output.  Passes back a Unity Vector3 object.
         /*public Vector3 stringToVec(string s) {
             string[] temp = s.Substring (1, s.Length-2).Split (',');
             return new Vector3 (float.Parse(temp[0]), float.Parse(temp[1]), float.Parse(temp[2]));
